@@ -1081,7 +1081,7 @@ function renderFlightCards(flights) {
 // Create Go Zayaan Boarding Pass Style Card (Responsive)
 function createZayaanFlightCard(flight, index) {
   const card = document.createElement('div');
-  card.className = 'zayaan-flight-card flex flex-col space-y-3 sm:space-y-4';
+  card.className = 'zayaan-flight-card flex flex-col space-y-2 sm:space-y-3';
 
   const status = flight.flight_status || 'unknown';
   const statusBadge = getStatusBadgeHtml(status);

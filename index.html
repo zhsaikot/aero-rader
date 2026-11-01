@@ -61,7 +61,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
   <!-- Custom Styling -->
-  <link rel="stylesheet" href="./css/style.css?v=2.6">
+  <link rel="stylesheet" href="./css/style.css?v=2.7">
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white relative">
 
@@ -214,7 +214,7 @@
   </aside>
 
   <!-- ================= HERO SECTION WITH HIGH-IMPACT AVIATION IMAGE ================= -->
-  <section class="relative text-white pt-10 sm:pt-14 pb-28 sm:pb-36 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[380px] sm:min-h-[440px] flex items-center justify-center">
+  <section class="relative text-white pt-8 sm:pt-12 pb-24 sm:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[320px] sm:min-h-[380px] flex items-center justify-center">
     
     <!-- Hero Background Image (High-Res Jetliner in Golden Hour Clouds) -->
     <div class="absolute inset-0 z-0">
@@ -249,7 +249,7 @@
 
   <!-- ================= FLOATING SEARCH ENGINE CARD (SIGNATURE GO ZAYAAN STYLE) ================= -->
   <section id="searchSection" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 -mt-20 sm:-mt-28 relative z-30 w-full">
-    <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-floating border border-slate-200/90 transition-all">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 sm:pb-4 shadow-floating border border-slate-200/90 transition-all">
       
       <!-- Search Mode Tabs (Swipeable on Mobile) -->
       <div class="flex items-center space-x-2 border-b border-slate-200 pb-3 mb-4 sm:mb-6 overflow-x-auto no-scrollbar text-xs sm:text-sm font-heading flex-nowrap">
@@ -488,7 +488,7 @@
       </form>
 
       <!-- QUICK POPULAR PRESETS / SHORTCUTS (SWIPEABLE ON MOBILE) -->
-      <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs overflow-x-auto no-scrollbar py-1">
+      <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-2 text-xs overflow-x-auto no-scrollbar py-0.5">
         <span class="text-slate-500 font-bold flex items-center flex-shrink-0 font-heading">
           <i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i> <span data-i18n="lblQuickPresets">Presets:</span>
         </span>
@@ -516,7 +516,7 @@
   </section>
 
   <!-- ================= FLIGHT RESULTS LISTING SECTION ================= -->
-  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-16 flex-grow w-full space-y-4 sm:space-y-6">
+  <main id="flightResultsMain" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4 flex-grow w-full space-y-3 sm:space-y-3.5">
     
     <!-- Results Header & Filters Bar -->
     <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
@@ -603,7 +603,7 @@
   </main>
 
   <!-- ================= POPULAR ROUTES QUICK CHIPS ================= -->
-  <section id="popularRoutesSection" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 w-full">
+  <section id="popularRoutesSection" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 w-full">
     <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
       <div class="flex items-center space-x-2.5 sm:space-x-3">
         <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold flex-shrink-0">
@@ -636,7 +636,7 @@
   </section>
 
   <!-- ================= TOURISM & DESTINATION SPOTLIGHT SECTION ================= -->
-  <section id="tourismSpotlight" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-4 sm:pb-8 w-full">
+  <section id="tourismSpotlight" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-5 pb-8 sm:pb-10 w-full">
     <div class="flex items-center justify-between mb-4 sm:mb-6">
       <div>
         <h2 class="font-heading text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight" data-i18n="titleTrendingDestinations">
@@ -986,8 +986,8 @@
   </div>
 
   <!-- ================= FOOTER ================= -->
-  <footer class="mt-auto bg-white border-t border-slate-200 py-8 sm:py-10 text-slate-500 text-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+  <footer class="mt-auto bg-white border-t border-slate-200 py-6 sm:py-7 text-slate-500 text-xs">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-5">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
         
         <div class="flex items-center space-x-3">
@@ -1020,6 +1020,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <!-- Main Application Script -->
-  <script src="./js/app.js?v=2.6"></script>
+  <script src="./js/app.js?v=2.7"></script>
 </body>
 </html>
