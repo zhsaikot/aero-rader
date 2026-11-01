@@ -552,11 +552,15 @@ function updateAirportCardDisplay(type) {
   const info = AIRPORT_DATABASE[code];
   const langData = info ? (info[currentLang] || info.en) : null;
   if (langData) {
-    if (cityLabel) cityLabel.textContent = `${langData.city}, ${langData.country}`;
+    if (cityLabel) {
+      cityLabel.textContent = (langData.country && !langData.city.includes(langData.country))
+        ? `${langData.city}, ${langData.country}`
+        : langData.city;
+    }
     if (airportLabel) airportLabel.textContent = langData.name;
   } else {
-    if (cityLabel) cityLabel.textContent = `${code} Destination`;
-    if (airportLabel) airportLabel.textContent = `Airport (${code})`;
+    if (cityLabel) cityLabel.textContent = `${code} Airport`;
+    if (airportLabel) airportLabel.textContent = `International Code (${code})`;
   }
 }
 
@@ -627,7 +631,7 @@ function renderAirportList(type, query) {
             </span>
             <div class="truncate">
               <span class="font-heading font-bold text-slate-800 group-hover:text-blue-600 text-xs block truncate transition-colors">
-                ${d.city}, ${d.country}
+                ${d.country && !d.city.includes(d.country) ? `${d.city}, ${d.country}` : d.city}
               </span>
               <span class="text-[10px] text-slate-400 block truncate">
                 ${d.name}
