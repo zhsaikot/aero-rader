@@ -61,7 +61,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
   <!-- Custom Styling -->
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/style.css?v=2.5">
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white relative">
 
@@ -280,24 +280,50 @@
       <form id="searchFormRoute" class="search-form space-y-3 sm:space-y-4">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-4 items-center">
           
-          <!-- FROM AIRPORT BOX -->
-          <div class="lg:col-span-4 relative group">
-            <div class="p-3 sm:p-3.5 bg-slate-50 hover:bg-blue-50/40 border-2 border-slate-200 hover:border-blue-500 rounded-xl sm:rounded-2xl transition-all cursor-pointer">
-              <span class="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-blue-600 font-heading" data-i18n="lblFrom">
-                FROM (ORIGIN)
-              </span>
+          <!-- FROM AIRPORT BOX WITH INTERACTIVE AUTOCOMPLETE -->
+          <div class="lg:col-span-4 relative" id="depCardContainer">
+            <div 
+              onclick="toggleAirportDropdown('dep')" 
+              class="p-3 sm:p-3.5 bg-slate-50 hover:bg-blue-50/60 border-2 border-slate-200 hover:border-blue-500 rounded-xl sm:rounded-2xl transition-all cursor-pointer group"
+            >
+              <div class="flex items-center justify-between">
+                <span class="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-blue-600 font-heading" data-i18n="lblFrom">
+                  FROM (ORIGIN)
+                </span>
+                <span class="text-[10px] text-blue-600 font-bold flex items-center space-x-1 group-hover:underline">
+                  <i class="fa-solid fa-magnifying-glass text-[9px]"></i>
+                  <span data-i18n="lblChange">Search / Change</span>
+                  <i class="fa-solid fa-chevron-down text-[8px] ml-0.5"></i>
+                </span>
+              </div>
               <div class="flex items-center space-x-2 mt-1">
-                <input 
-                  type="text" 
-                  id="inputDepIata" 
-                  value="DAC" 
-                  maxlength="3" 
-                  class="w-14 sm:w-16 font-extrabold text-xl sm:text-2xl font-mono uppercase bg-transparent text-slate-900 focus:outline-none"
-                >
+                <span id="depIataDisplay" class="font-extrabold text-xl sm:text-2xl font-mono uppercase text-slate-900">DAC</span>
+                <input type="hidden" id="inputDepIata" value="DAC">
                 <div class="border-l border-slate-200 pl-2 sm:pl-2.5 flex-grow min-w-0">
                   <span id="depCityLabel" class="block font-bold text-xs sm:text-sm text-slate-800 truncate font-heading">Dhaka, Bangladesh</span>
                   <span id="depAirportLabel" class="block text-[10px] sm:text-[11px] text-slate-500 truncate">Hazrat Shahjalal Intl (DAC)</span>
                 </div>
+              </div>
+            </div>
+
+            <!-- DROPDOWN SEARCH POPUP -->
+            <div id="depAirportDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 z-40 p-3 max-h-80 flex flex-col">
+              <div class="relative mb-2">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input 
+                  type="text" 
+                  id="depAirportSearchInput" 
+                  placeholder="Type origin city, country or code (e.g. Dhaka, DAC)..." 
+                  class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-600 focus:bg-white text-slate-900"
+                  oninput="filterAirportList('dep', this.value)"
+                  onclick="event.stopPropagation()"
+                >
+              </div>
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 px-1 font-heading" data-i18n="lblPopularAirports">
+                Select Origin Airport
+              </div>
+              <div id="depAirportList" class="overflow-y-auto space-y-1 text-xs max-h-56 pr-1 custom-scroll">
+                <!-- Airport entries generated dynamically -->
               </div>
             </div>
           </div>
@@ -317,24 +343,50 @@
             </button>
           </div>
 
-          <!-- TO AIRPORT BOX -->
-          <div class="lg:col-span-4 relative group">
-            <div class="p-3 sm:p-3.5 bg-slate-50 hover:bg-blue-50/40 border-2 border-slate-200 hover:border-blue-500 rounded-xl sm:rounded-2xl transition-all cursor-pointer">
-              <span class="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-blue-600 font-heading" data-i18n="lblTo">
-                TO (DESTINATION)
-              </span>
+          <!-- TO AIRPORT BOX WITH INTERACTIVE AUTOCOMPLETE -->
+          <div class="lg:col-span-4 relative" id="arrCardContainer">
+            <div 
+              onclick="toggleAirportDropdown('arr')" 
+              class="p-3 sm:p-3.5 bg-slate-50 hover:bg-blue-50/60 border-2 border-slate-200 hover:border-blue-500 rounded-xl sm:rounded-2xl transition-all cursor-pointer group"
+            >
+              <div class="flex items-center justify-between">
+                <span class="block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-blue-600 font-heading" data-i18n="lblTo">
+                  TO (DESTINATION)
+                </span>
+                <span class="text-[10px] text-blue-600 font-bold flex items-center space-x-1 group-hover:underline">
+                  <i class="fa-solid fa-magnifying-glass text-[9px]"></i>
+                  <span data-i18n="lblChange">Search / Change</span>
+                  <i class="fa-solid fa-chevron-down text-[8px] ml-0.5"></i>
+                </span>
+              </div>
               <div class="flex items-center space-x-2 mt-1">
-                <input 
-                  type="text" 
-                  id="inputArrIata" 
-                  value="DXB" 
-                  maxlength="3" 
-                  class="w-14 sm:w-16 font-extrabold text-xl sm:text-2xl font-mono uppercase bg-transparent text-slate-900 focus:outline-none"
-                >
+                <span id="arrIataDisplay" class="font-extrabold text-xl sm:text-2xl font-mono uppercase text-slate-900">DXB</span>
+                <input type="hidden" id="inputArrIata" value="DXB">
                 <div class="border-l border-slate-200 pl-2 sm:pl-2.5 flex-grow min-w-0">
                   <span id="arrCityLabel" class="block font-bold text-xs sm:text-sm text-slate-800 truncate font-heading">Dubai, UAE</span>
                   <span id="arrAirportLabel" class="block text-[10px] sm:text-[11px] text-slate-500 truncate">Dubai International (DXB)</span>
                 </div>
+              </div>
+            </div>
+
+            <!-- DROPDOWN SEARCH POPUP -->
+            <div id="arrAirportDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 z-40 p-3 max-h-80 flex flex-col">
+              <div class="relative mb-2">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input 
+                  type="text" 
+                  id="arrAirportSearchInput" 
+                  placeholder="Type destination city or airport (e.g. Dubai, London)..." 
+                  class="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-600 focus:bg-white text-slate-900"
+                  oninput="filterAirportList('arr', this.value)"
+                  onclick="event.stopPropagation()"
+                >
+              </div>
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 px-1 font-heading" data-i18n="lblPopularAirports">
+                Select Destination Airport
+              </div>
+              <div id="arrAirportList" class="overflow-y-auto space-y-1 text-xs max-h-56 pr-1 custom-scroll">
+                <!-- Airport entries generated dynamically -->
               </div>
             </div>
           </div>
@@ -968,6 +1020,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <!-- Main Application Script -->
-  <script src="./js/app.js"></script>
+  <script src="./js/app.js?v=2.5"></script>
 </body>
 </html>

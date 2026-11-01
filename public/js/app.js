@@ -183,6 +183,8 @@ const I18N = {
     lblAirlineName: "Airline Carrier Name",
     btnFindAirline: "Find Flights",
     lblQuickPresets: "Presets:",
+    lblChange: "Search / Change",
+    lblPopularAirports: "Select Airport",
     titleTrendingDestinations: "Explore Trending Destinations with Live Flights",
     subTrendingDestinations: "Popular tourism hubs & global transit routes tracked with instant real-time data",
     btnViewAll: "View All",
@@ -249,6 +251,8 @@ const I18N = {
     lblAirlineName: "এয়ারলাইন্সের নাম",
     btnFindAirline: "এয়ারলাইন্স খুঁজুন",
     lblQuickPresets: "প্রিসেট:",
+    lblChange: "খুঁজুন / পরিবর্তন",
+    lblPopularAirports: "এয়ারপোর্ট নির্বাচন করুন",
     titleTrendingDestinations: "জনপ্রিয় ট্যুরিজম গন্তব্য ও সরাসরি ফ্লাইট",
     subTrendingDestinations: "সর্বাধিক ট্র্যাকিংকৃত আন্তর্জাতিক ও দেশীয় জনপ্রিয় ভ্রমণ রুট",
     btnViewAll: "সকল রুট",
@@ -391,6 +395,13 @@ let mapLayers = [];
 document.addEventListener('DOMContentLoaded', () => {
   initUtcClock();
   initTabs();
+  const toggleBtn = document.getElementById('sidebarToggleBtn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openSidebar();
+    });
+  }
   initAirportInputs();
   checkApiStatus();
   setupFormListeners();
@@ -453,10 +464,22 @@ function switchLanguage(lang) {
       : 'e.g. Emirates, Biman Bangladesh, Singapore Airlines';
   }
 
-  const depInput = document.getElementById('inputDepIata');
-  const arrInput = document.getElementById('inputArrIata');
-  if (depInput) depInput.dispatchEvent(new Event('input'));
-  if (arrInput) arrInput.dispatchEvent(new Event('input'));
+  const depSearch = document.getElementById('depAirportSearchInput');
+  if (depSearch) {
+    depSearch.placeholder = (currentLang === 'bn') 
+      ? 'শহর, দেশ বা কোড লিখুন (যেমন: ঢাকা, DAC)...' 
+      : 'Type origin city, country or code (e.g. Dhaka, DAC)...';
+  }
+
+  const arrSearch = document.getElementById('arrAirportSearchInput');
+  if (arrSearch) {
+    arrSearch.placeholder = (currentLang === 'bn') 
+      ? 'গন্তব্য শহর বা এয়ারপোর্ট লিখুন (যেমন: দুবাই, লন্ডন)...' 
+      : 'Type destination city or airport (e.g. Dubai, London)...';
+  }
+
+  updateAirportCardDisplay('dep');
+  updateAirportCardDisplay('arr');
 
   if (currentFlights.length > 0) {
     renderFlightCards(currentFlights);
@@ -469,72 +492,237 @@ function switchLanguage(lang) {
   }
 }
 
+// ================= AIRPORT DROPDOWN SEARCH & PICKER FUNCTIONS =================
+function toggleAirportDropdown(type) {
+  const depDropdown = document.getElementById('depAirportDropdown');
+  const arrDropdown = document.getElementById('arrAirportDropdown');
+  
+  if (type === 'dep') {
+    if (arrDropdown) arrDropdown.classList.add('hidden');
+    if (depDropdown) {
+      depDropdown.classList.toggle('hidden');
+      if (!depDropdown.classList.contains('hidden')) {
+        renderAirportList('dep', '');
+        const input = document.getElementById('depAirportSearchInput');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+  } else {
+    if (depDropdown) depDropdown.classList.add('hidden');
+    if (arrDropdown) {
+      arrDropdown.classList.toggle('hidden');
+      if (!arrDropdown.classList.contains('hidden')) {
+        renderAirportList('arr', '');
+        const input = document.getElementById('arrAirportSearchInput');
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }
+  }
+}
+
+function selectAirport(type, code) {
+  const upperCode = code.toUpperCase().trim();
+  const inputEl = document.getElementById(type === 'dep' ? 'inputDepIata' : 'inputArrIata');
+  if (inputEl) {
+    inputEl.value = upperCode;
+  }
+  updateAirportCardDisplay(type);
+  
+  const dropdown = document.getElementById(type === 'dep' ? 'depAirportDropdown' : 'arrAirportDropdown');
+  if (dropdown) dropdown.classList.add('hidden');
+}
+
+function updateAirportCardDisplay(type) {
+  const isDep = type === 'dep';
+  const inputEl = document.getElementById(isDep ? 'inputDepIata' : 'inputArrIata');
+  const displayIata = document.getElementById(isDep ? 'depIataDisplay' : 'arrIataDisplay');
+  const cityLabel = document.getElementById(isDep ? 'depCityLabel' : 'arrCityLabel');
+  const airportLabel = document.getElementById(isDep ? 'depAirportLabel' : 'arrAirportLabel');
+  
+  if (!inputEl) return;
+  const code = inputEl.value.toUpperCase().trim();
+  if (displayIata) displayIata.textContent = code;
+  
+  const info = AIRPORT_DATABASE[code];
+  const langData = info ? (info[currentLang] || info.en) : null;
+  if (langData) {
+    if (cityLabel) cityLabel.textContent = `${langData.city}, ${langData.country}`;
+    if (airportLabel) airportLabel.textContent = langData.name;
+  } else {
+    if (cityLabel) cityLabel.textContent = `${code} Destination`;
+    if (airportLabel) airportLabel.textContent = `Airport (${code})`;
+  }
+}
+
+function filterAirportList(type, query) {
+  renderAirportList(type, query);
+}
+
+function renderAirportList(type, query) {
+  const container = document.getElementById(type === 'dep' ? 'depAirportList' : 'arrAirportList');
+  if (!container) return;
+  
+  const q = (query || '').toLowerCase().trim();
+  const isBn = currentLang === 'bn';
+  const entries = Object.entries(AIRPORT_DATABASE);
+  
+  let filtered = entries.filter(([code, data]) => {
+    if (!q) return true;
+    const en = data.en || {};
+    const bn = data.bn || {};
+    return (
+      code.toLowerCase().includes(q) ||
+      (en.city && en.city.toLowerCase().includes(q)) ||
+      (en.country && en.country.toLowerCase().includes(q)) ||
+      (en.name && en.name.toLowerCase().includes(q)) ||
+      (bn.city && bn.city.toLowerCase().includes(q)) ||
+      (bn.country && bn.country.toLowerCase().includes(q)) ||
+      (bn.name && bn.name.toLowerCase().includes(q))
+    );
+  });
+  
+  let html = '';
+  if (filtered.length === 0) {
+    if (q.length >= 2) {
+      const customCode = q.slice(0, 3).toUpperCase();
+      html = `
+        <button 
+          type="button" 
+          onclick="selectAirport('${type}', '${customCode}')" 
+          class="w-full p-2.5 rounded-xl hover:bg-blue-50 text-left transition-colors flex items-center justify-between group cursor-pointer border border-blue-200 bg-blue-50/50"
+        >
+          <div class="flex items-center space-x-2.5">
+            <span class="w-10 h-7 rounded-lg bg-blue-600 text-white font-mono font-bold text-xs flex items-center justify-center">
+              ${customCode}
+            </span>
+            <div>
+              <span class="font-heading font-bold text-slate-800 text-xs block">${customCode} Airport</span>
+              <span class="text-[10px] text-blue-600">${isBn ? 'এই কাস্টম এয়ারপোর্ট কোড নির্বাচন করুন' : 'Select custom airport code'}</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-arrow-right text-xs text-blue-600"></i>
+        </button>
+      `;
+    } else {
+      html = `<div class="p-4 text-center text-slate-400 text-xs">${isBn ? 'কোনো এয়ারপোর্ট মেলেনি' : 'No matching airports found'}</div>`;
+    }
+  } else {
+    html = filtered.map(([code, data]) => {
+      const d = data[currentLang] || data.en;
+      return `
+        <button 
+          type="button" 
+          onclick="selectAirport('${type}', '${code}')" 
+          class="w-full p-2 rounded-xl hover:bg-blue-50 text-left transition-colors flex items-center justify-between group cursor-pointer"
+        >
+          <div class="flex items-center space-x-2.5 min-w-0">
+            <span class="w-10 h-7 rounded-lg bg-slate-100 group-hover:bg-blue-600 group-hover:text-white text-slate-700 font-mono font-bold text-xs flex items-center justify-center transition-colors flex-shrink-0">
+              ${code}
+            </span>
+            <div class="truncate">
+              <span class="font-heading font-bold text-slate-800 group-hover:text-blue-600 text-xs block truncate transition-colors">
+                ${d.city}, ${d.country}
+              </span>
+              <span class="text-[10px] text-slate-400 block truncate">
+                ${d.name}
+              </span>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 group-hover:text-blue-600 transition-colors ml-1"></i>
+        </button>
+      `;
+    }).join('');
+  }
+  
+  container.innerHTML = html;
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', (e) => {
+  const depCard = document.getElementById('depCardContainer');
+  const arrCard = document.getElementById('arrCardContainer');
+  const depDropdown = document.getElementById('depAirportDropdown');
+  const arrDropdown = document.getElementById('arrAirportDropdown');
+  
+  if (depDropdown && !depDropdown.classList.contains('hidden')) {
+    if (depCard && !depCard.contains(e.target)) {
+      depDropdown.classList.add('hidden');
+    }
+  }
+  if (arrDropdown && !arrDropdown.classList.contains('hidden')) {
+    if (arrCard && !arrCard.contains(e.target)) {
+      arrDropdown.classList.add('hidden');
+    }
+  }
+});
+
+// ================= SIDEBAR DRAWER FUNCTIONS =================
+function openSidebar() {
+  const drawer = document.getElementById('sidebarDrawer');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (drawer && backdrop) {
+    drawer.classList.remove('translate-x-full');
+    drawer.classList.add('translate-x-0', 'open');
+    backdrop.classList.remove('opacity-0', 'pointer-events-none');
+    backdrop.classList.add('opacity-100', 'pointer-events-auto', 'open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeSidebar() {
+  const drawer = document.getElementById('sidebarDrawer');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (drawer && backdrop) {
+    drawer.classList.add('translate-x-full');
+    drawer.classList.remove('translate-x-0', 'open');
+    backdrop.classList.add('opacity-0', 'pointer-events-none');
+    backdrop.classList.remove('opacity-100', 'pointer-events-auto', 'open');
+    document.body.style.overflow = '';
+  }
+}
+window.openSidebar = openSidebar;
+window.closeSidebar = closeSidebar;
+window.toggleAirportDropdown = toggleAirportDropdown;
+window.selectAirport = selectAirport;
+window.filterAirportList = filterAirportList;
+
+
+// Synchronize Airport Inputs with Labels
 // Synchronize Airport Inputs with Labels
 function initAirportInputs() {
-  const depInput = document.getElementById('inputDepIata');
-  const arrInput = document.getElementById('inputArrIata');
-
-  function updateDepLabels() {
-    const code = depInput.value.trim().toUpperCase();
-    const info = AIRPORT_DATABASE[code];
-    const langData = info ? (info[currentLang] || info.en) : null;
-    if (langData) {
-      document.getElementById('depCityLabel').textContent = langData.city;
-      document.getElementById('depAirportLabel').textContent = langData.name;
-    } else {
-      document.getElementById('depCityLabel').textContent = `${code} Airport`;
-      document.getElementById('depAirportLabel').textContent = `International Code (${code})`;
-    }
-  }
-
-  function updateArrLabels() {
-    const code = arrInput.value.trim().toUpperCase();
-    const info = AIRPORT_DATABASE[code];
-    const langData = info ? (info[currentLang] || info.en) : null;
-    if (langData) {
-      document.getElementById('arrCityLabel').textContent = langData.city;
-      document.getElementById('arrAirportLabel').textContent = langData.name;
-    } else {
-      document.getElementById('arrCityLabel').textContent = `${code} Airport`;
-      document.getElementById('arrAirportLabel').textContent = `International Code (${code})`;
-    }
-  }
-
-  depInput.addEventListener('input', updateDepLabels);
-  arrInput.addEventListener('input', updateArrLabels);
-
-  updateDepLabels();
-  updateArrLabels();
+  updateAirportCardDisplay('dep');
+  updateAirportCardDisplay('arr');
 }
 
 // Check Backend or Direct API Status
 async function checkApiStatus() {
-  const statusBadge = document.getElementById('apiStatusBadge');
-  const statusText = document.getElementById('apiStatusText');
-  
-  // Try checking local proxy first
+  const statusBadge = document.getElementById('sidebarApiBadge');
+  const isBn = currentLang === 'bn';
+
+  if (!statusBadge) return;
+
   try {
     const res = await fetch('/api/status');
     if (res.ok) {
       const data = await res.json();
       if (data.success && data.status === 'operational') {
-        statusBadge.className = 'hidden sm:flex items-center space-x-1.5 text-[11px] sm:text-xs bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-1 rounded-xl font-medium';
-        statusText.textContent = (currentLang === 'bn') ? 'সক্রিয়' : 'Live';
+        statusBadge.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping mr-1"></span>' + (isBn ? 'সক্রিয়' : 'Online');
+        statusBadge.className = 'font-bold text-emerald-600 flex items-center space-x-1';
         return;
       }
     }
   } catch (e) {
-    // If static hosting (GitHub Pages), fallback to direct API ping
+    // Static hosting mode
   }
 
-  // GitHub Pages / Direct API Ping
-  try {
-    statusBadge.className = 'hidden sm:flex items-center space-x-1.5 text-[11px] sm:text-xs bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-1 rounded-xl font-medium';
-    statusText.textContent = (currentLang === 'bn') ? 'API রেডি' : 'API Ready';
-  } catch (err) {
-    statusBadge.className = 'hidden sm:flex items-center space-x-1.5 text-[11px] sm:text-xs bg-amber-50 text-amber-700 border border-amber-200/80 px-2.5 py-1 rounded-xl font-medium';
-    statusText.textContent = (currentLang === 'bn') ? 'সিমুলেশন' : 'Simulation';
-  }
+  statusBadge.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping mr-1"></span>' + (isBn ? 'সক্রিয়' : 'Online');
+  statusBadge.className = 'font-bold text-emerald-600 flex items-center space-x-1';
 }
 
 // Tab Switching
@@ -584,9 +772,12 @@ function initTabs() {
     quickSearch({ flight_status: 'active' });
   });
 
-  document.getElementById('quickLiveBtn').addEventListener('click', () => {
-    quickSearch({ flight_status: 'active' });
-  });
+  const qBtn = document.getElementById('quickLiveBtn');
+  if (qBtn) {
+    qBtn.addEventListener('click', () => {
+      quickSearch({ flight_status: 'active' });
+    });
+  }
 }
 
 // Form Handlers
@@ -627,25 +818,29 @@ function setupFormListeners() {
 }
 
 // Swap Origin and Destination
+// Swap Origin and Destination
 function swapAirports() {
   const dep = document.getElementById('inputDepIata');
   const arr = document.getElementById('inputArrIata');
+  if (!dep || !arr) return;
   const tmp = dep.value;
   dep.value = arr.value;
   arr.value = tmp;
-  dep.dispatchEvent(new Event('input'));
-  arr.dispatchEvent(new Event('input'));
+  updateAirportCardDisplay('dep');
+  updateAirportCardDisplay('arr');
 }
 
 // Quick Search by Route
+// Quick Search by Route
 function quickRouteSearch(dep, arr) {
-  document.getElementById('tabRoute').click();
+  const tab = document.getElementById('tabRoute');
+  if (tab) tab.click();
   const depInput = document.getElementById('inputDepIata');
   const arrInput = document.getElementById('inputArrIata');
-  depInput.value = dep;
-  arrInput.value = arr;
-  depInput.dispatchEvent(new Event('input'));
-  arrInput.dispatchEvent(new Event('input'));
+  if (depInput) depInput.value = dep;
+  if (arrInput) arrInput.value = arr;
+  updateAirportCardDisplay('dep');
+  updateAirportCardDisplay('arr');
 
   fetchFlights({ dep_iata: dep, arr_iata: arr });
 
