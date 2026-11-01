@@ -46,7 +46,8 @@
           boxShadow: {
             'card': '0 4px 20px -2px rgba(11, 27, 61, 0.06), 0 2px 6px -1px rgba(11, 27, 61, 0.04)',
             'floating': '0 20px 40px -15px rgba(11, 27, 61, 0.12)',
-            'hover': '0 12px 30px -5px rgba(0, 100, 210, 0.12)'
+            'hover': '0 12px 30px -5px rgba(0, 100, 210, 0.12)',
+            'drawer': '-10px 0 35px -5px rgba(11, 27, 61, 0.2)'
           }
         }
       }
@@ -62,11 +63,11 @@
   <!-- Custom Styling -->
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="bg-[#F8FAFC] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white">
+<body class="bg-[#F8FAFC] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white relative">
 
-  <!-- ================= TOP NAVIGATION BAR (FULLY RESPONSIVE) ================= -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm transition-all duration-200">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+  <!-- ================= TOP MINIMALIST HEADER ================= -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-sm transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
       
       <!-- Brand Logo -->
       <div class="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer group" onclick="resetSearch()">
@@ -75,65 +76,44 @@
         </div>
         <div class="truncate">
           <div class="flex items-center space-x-1.5 sm:space-x-2">
-            <span class="font-heading font-extrabold text-lg sm:text-2xl tracking-tight text-slate-900">Aero<span class="text-blue-600">Radar</span></span>
+            <span class="font-heading font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900">Aero<span class="text-blue-600">Radar</span></span>
             <span class="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-heading">Pro</span>
           </div>
-          <p class="text-[10px] sm:text-[11px] text-slate-500 font-medium hidden md:block truncate">Global Flight Intelligence & Radar</p>
+          <p class="text-[10px] sm:text-[11px] text-slate-500 font-medium hidden sm:block truncate" data-i18n="tagline">Global Flight Intelligence & Live Radar</p>
         </div>
       </div>
 
-      <!-- Navigation Links (Desktop) -->
-      <nav class="hidden lg:flex items-center space-x-6 xl:space-x-8 text-sm font-semibold text-slate-600">
-        <a href="#searchSection" class="text-blue-600 hover:text-blue-700 transition-colors flex items-center space-x-1.5">
-          <i class="fa-solid fa-magnifying-glass text-xs"></i>
-          <span data-i18n="navFlightTracker">Flight Tracker</span>
-        </a>
-        <button onclick="quickSearch({ flight_status: 'active' })" class="hover:text-blue-600 transition-colors flex items-center space-x-1.5 cursor-pointer">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span data-i18n="navLiveAirborne">Live Radar</span>
-        </button>
-        <a href="#popularRoutesSection" class="hover:text-blue-600 transition-colors flex items-center space-x-1.5">
-          <i class="fa-solid fa-fire text-amber-500 text-xs"></i>
-          <span data-i18n="navPopularRoutes">Popular Routes</span>
-        </a>
-        <a href="#tourismSpotlight" class="hover:text-blue-600 transition-colors flex items-center space-x-1.5">
-          <i class="fa-solid fa-earth-americas text-blue-500 text-xs"></i>
-          <span data-i18n="navTopDestinations">Top Destinations</span>
-        </a>
-      </nav>
-
-      <!-- Right Side Utilities (Mobile & Desktop) -->
+      <!-- Right Side Utilities (Language Switcher & Sidebar Drawer Toggle) -->
       <div class="flex items-center space-x-2 sm:space-x-3">
         
-        <!-- Live Clock (Hidden on mobile) -->
-        <div class="hidden xl:flex items-center space-x-1.5 text-xs font-mono bg-slate-100/90 text-slate-700 px-2.5 py-1.5 rounded-xl border border-slate-200">
+        <!-- Live Clock (Desktop only) -->
+        <div class="hidden lg:flex items-center space-x-1.5 text-xs font-mono bg-slate-100/90 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200">
           <i class="fa-regular fa-clock text-blue-600"></i>
           <span id="utcClock">00:00:00 UTC</span>
         </div>
 
-        <!-- API Connection Pill (Hidden on small mobile) -->
-        <div id="apiStatusBadge" class="hidden sm:flex items-center space-x-1.5 text-[11px] sm:text-xs bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-1 rounded-xl font-medium">
-          <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-          <span id="apiStatusText">Live</span>
-        </div>
-
         <!-- LANGUAGE SWITCHER (EN / BN) -->
-        <div class="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200 text-[11px] sm:text-xs font-bold font-heading">
-          <button id="langBtnEn" onclick="switchLanguage('en')" class="px-2 sm:px-2.5 py-1 rounded-lg transition-all text-white bg-blue-600 shadow-sm cursor-pointer">
+        <div class="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200 text-xs font-bold font-heading">
+          <button id="langBtnEn" onclick="switchLanguage('en')" class="px-2.5 py-1 rounded-lg transition-all text-white bg-blue-600 shadow-sm cursor-pointer">
             EN
           </button>
-          <button id="langBtnBn" onclick="switchLanguage('bn')" class="px-2 sm:px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-blue-600 cursor-pointer">
+          <button id="langBtnBn" onclick="switchLanguage('bn')" class="px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-blue-600 cursor-pointer">
             বাং
           </button>
         </div>
 
-        <!-- Quick Live Radar Button (Icon on mobile, Full text on desktop) -->
-        <button id="quickLiveBtn" class="flex items-center space-x-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer font-heading flex-shrink-0" title="Live Radar">
-          <i class="fa-solid fa-satellite-dish text-xs"></i>
-          <span class="hidden sm:inline" data-i18n="btnLiveRadar">Live Radar</span>
+        <!-- Quick Live Radar Button -->
+        <button onclick="quickSearch({ flight_status: 'active' })" class="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 transition-all active:scale-95 cursor-pointer font-heading">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span data-i18n="btnLiveRadar">Live Radar</span>
+        </button>
+
+        <!-- LUXURY SIDEBAR TOGGLE BUTTON -->
+        <button id="sidebarToggleBtn" onclick="openSidebar()" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-slate-900 hover:bg-blue-600 text-white flex items-center justify-center transition-all shadow-md active:scale-90 cursor-pointer group" title="Open Navigation Menu">
+          <i class="fa-solid fa-bars-staggered text-sm sm:text-base group-hover:scale-110 transition-transform"></i>
         </button>
 
       </div>
@@ -141,33 +121,126 @@
     </div>
   </header>
 
-  <!-- ================= HERO SECTION WITH TOURISM BACKDROP ================= -->
-  <section class="relative text-white pt-8 sm:pt-12 pb-24 sm:pb-32 px-4 sm:px-6 lg:px-8 overflow-hidden">
+  <!-- ================= LUXURY SLIDE-OVER SIDEBAR (NAVIGATION DRAWER) ================= -->
+  <div id="sidebarBackdrop" onclick="closeSidebar()" class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+  
+  <aside id="sidebarDrawer" class="fixed top-0 right-0 h-full w-80 sm:w-96 bg-white z-50 shadow-drawer flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out border-l border-slate-200">
     
-    <!-- Hero Background Image & Gradient Overlay -->
-    <div class="absolute inset-0 z-0">
-      <img 
-        src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=80" 
-        alt="Aviation Flight Sky" 
-        class="w-full h-full object-cover object-center filter brightness-50"
-      >
-      <div class="absolute inset-0 bg-gradient-to-r from-[#071738]/95 via-[#0b2454]/90 to-[#123974]/85"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(#ffffff0f_1px,transparent_1px)] [background-size:20px_20px]"></div>
+    <!-- Sidebar Header -->
+    <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm shadow-md">
+          <i class="fa-solid fa-plane-departure"></i>
+        </div>
+        <div>
+          <span class="font-heading font-extrabold text-lg text-slate-900">Aero<span class="text-blue-600">Radar</span></span>
+          <span class="text-[10px] text-slate-400 block font-medium" data-i18n="sidebarSubtitle">Navigation & Control</span>
+        </div>
+      </div>
+      <button onclick="closeSidebar()" class="w-8 h-8 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center transition-colors cursor-pointer">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
     </div>
 
-    <!-- Hero Content -->
-    <div class="max-w-5xl mx-auto text-center space-y-3 sm:space-y-4 relative z-10">
+    <!-- Sidebar Navigation Links -->
+    <div class="p-5 overflow-y-auto space-y-6 flex-grow">
       
-      <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold text-blue-200 border border-white/20">
+      <!-- Primary Navigation Links -->
+      <div class="space-y-1.5 font-heading text-sm font-semibold">
+        <a href="#searchSection" onclick="closeSidebar()" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50/70 transition-all">
+          <i class="fa-solid fa-magnifying-glass text-blue-600 w-5"></i>
+          <span data-i18n="navFlightTracker">Flight Tracker</span>
+        </a>
+        <button onclick="closeSidebar(); quickSearch({ flight_status: 'active' });" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50/70 transition-all text-left">
+          <i class="fa-solid fa-satellite-dish text-emerald-600 w-5"></i>
+          <span data-i18n="navLiveAirborne">Live Radar Map</span>
+        </button>
+        <a href="#popularRoutesSection" onclick="closeSidebar()" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50/70 transition-all">
+          <i class="fa-solid fa-fire text-amber-500 w-5"></i>
+          <span data-i18n="navPopularRoutes">Popular Routes</span>
+        </a>
+        <a href="#tourismSpotlight" onclick="closeSidebar()" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-slate-700 hover:text-blue-600 hover:bg-blue-50/70 transition-all">
+          <i class="fa-solid fa-earth-americas text-indigo-500 w-5"></i>
+          <span data-i18n="navTopDestinations">Top Destinations</span>
+        </a>
+      </div>
+
+      <!-- Quick Airport Shortcuts -->
+      <div class="pt-4 border-t border-slate-100">
+        <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 font-heading mb-3" data-i18n="sidebarAirports">
+          Major Airport Hubs
+        </h4>
+        <div class="grid grid-cols-2 gap-2 text-xs font-mono font-bold">
+          <button onclick="closeSidebar(); quickRouteSearch('DAC', 'DXB');" class="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 text-left transition-colors">
+            🛫 DAC ➔ DXB
+          </button>
+          <button onclick="closeSidebar(); quickRouteSearch('DAC', 'CXB');" class="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 text-left transition-colors">
+            🏖️ DAC ➔ CXB
+          </button>
+          <button onclick="closeSidebar(); quickRouteSearch('DAC', 'LHR');" class="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 text-left transition-colors">
+            🇬🇧 DAC ➔ LHR
+          </button>
+          <button onclick="closeSidebar(); quickRouteSearch('DAC', 'SIN');" class="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 text-left transition-colors">
+            🇸🇬 DAC ➔ SIN
+          </button>
+        </div>
+      </div>
+
+      <!-- API & System Telemetry Status -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-500 font-semibold" data-i18n="sidebarApiStatus">System Status:</span>
+          <span id="sidebarApiBadge" class="font-bold text-emerald-600 flex items-center space-x-1">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping mr-1"></span>Online
+          </span>
+        </div>
+        <div class="flex justify-between text-slate-400 font-mono text-[11px]">
+          <span>Data Engine:</span>
+          <span>Aviationstack API</span>
+        </div>
+        <div class="flex justify-between text-slate-400 font-mono text-[11px]">
+          <span>Cache Mode:</span>
+          <span>Client Storage (3m)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-slate-100 bg-slate-50/70 text-[11px] text-slate-400 text-center">
+      <p>© 2026 AeroRadar. All Rights Reserved.</p>
+    </div>
+
+  </aside>
+
+  <!-- ================= HERO SECTION WITH HIGH-IMPACT AVIATION IMAGE ================= -->
+  <section class="relative text-white pt-10 sm:pt-14 pb-28 sm:pb-36 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[380px] sm:min-h-[440px] flex items-center justify-center">
+    
+    <!-- Hero Background Image (High-Res Jetliner in Golden Hour Clouds) -->
+    <div class="absolute inset-0 z-0">
+      <img 
+        src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=2000&q=85" 
+        alt="Commercial Jet Flight above Sunset Clouds" 
+        class="w-full h-full object-cover object-center filter brightness-90 transform scale-105"
+      >
+      <!-- Premium Glassmorphic Gradient Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-blue-950/75 to-slate-900/80 backdrop-blur-[1px]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(#ffffff12_1px,transparent_1px)] [background-size:22px_22px]"></div>
+    </div>
+
+    <!-- Hero Text Content -->
+    <div class="max-w-5xl mx-auto text-center space-y-3.5 sm:space-y-4 relative z-10 -mt-6 sm:-mt-8">
+      
+      <div class="inline-flex items-center space-x-2 bg-white/15 backdrop-blur-md px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold text-blue-200 border border-white/20 shadow-sm">
         <i class="fa-solid fa-shield-halved text-amber-400"></i>
         <span data-i18n="heroBadge">Global Aviation Intelligence & Real-Time Tracking</span>
       </div>
 
-      <h1 class="font-heading text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight px-2">
+      <h1 class="font-heading text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight px-2 text-white drop-shadow-md" data-i18n="heroTitle">
         Track Any Flight Worldwide in <span class="text-blue-400">Real-Time</span>
       </h1>
       
-      <p class="text-xs sm:text-sm md:text-base text-slate-200 max-w-2xl mx-auto font-normal px-2 line-clamp-3 sm:line-clamp-none" data-i18n="heroSubtitle">
+      <p class="text-xs sm:text-sm md:text-base text-slate-200 max-w-2xl mx-auto font-normal px-2 drop-shadow" data-i18n="heroSubtitle">
         Search live flights by flight code, airport routes, or commercial airlines. Access scheduled timings, terminal gates, baggage claim carousels, and live GPS radar tracking.
       </p>
 
@@ -175,7 +248,7 @@
   </section>
 
   <!-- ================= FLOATING SEARCH ENGINE CARD (SIGNATURE GO ZAYAAN STYLE) ================= -->
-  <section id="searchSection" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 -mt-16 sm:-mt-24 relative z-30 w-full">
+  <section id="searchSection" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 -mt-20 sm:-mt-28 relative z-30 w-full">
     <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-floating border border-slate-200/90 transition-all">
       
       <!-- Search Mode Tabs (Swipeable on Mobile) -->
@@ -229,15 +302,16 @@
             </div>
           </div>
 
-          <!-- SWAP BUTTON (RESPONSIVE ALIGNMENT) -->
+          <!-- SWAP BUTTON -->
           <div class="lg:col-span-1 flex items-center justify-center -my-2 lg:my-0 relative z-10">
             <button 
               type="button" 
               onclick="swapAirports()" 
-              class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border-2 border-slate-200 shadow-md hover:shadow-lg hover:border-blue-500 text-blue-600 hover:bg-blue-50/50 flex items-center justify-center transition-all active:scale-90 cursor-pointer group"
-              title="Swap Airports"
+              class="w-10 h-10 rounded-full bg-white border-2 border-slate-200 hover:border-blue-500 shadow-md hover:shadow-lg text-blue-600 hover:bg-blue-50/50 flex items-center justify-center transition-all active:scale-90 cursor-pointer group"
+              title="Swap Origin & Destination"
+              aria-label="Swap Origin & Destination"
             >
-              <svg class="w-4 h-4 text-blue-600 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg class="w-4 h-4 text-blue-600 group-hover:rotate-180 transition-transform duration-300" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"></path>
               </svg>
             </button>
@@ -305,12 +379,12 @@
               Flight Status
             </label>
             <select id="selectFlightStatus" class="w-full py-3 sm:py-3.5 px-3 sm:px-4 bg-slate-50 border-2 border-slate-200 rounded-xl sm:rounded-2xl text-slate-800 font-semibold text-xs sm:text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all">
-              <option value="all">All Statuses</option>
-              <option value="active">🟢 Active / Airborne</option>
-              <option value="scheduled">🔵 Scheduled</option>
-              <option value="landed">⚪ Landed</option>
-              <option value="cancelled">🔴 Cancelled</option>
-              <option value="diverted">🟡 Diverted</option>
+              <option value="all" data-i18n-opt="optAll">All Statuses</option>
+              <option value="active" data-i18n-opt="optActive">🟢 Active / Airborne</option>
+              <option value="scheduled" data-i18n-opt="optScheduled">🔵 Scheduled</option>
+              <option value="landed" data-i18n-opt="optLanded">⚪ Landed</option>
+              <option value="cancelled" data-i18n-opt="optCancelled">🔴 Cancelled</option>
+              <option value="diverted" data-i18n-opt="optDiverted">🟡 Diverted</option>
             </select>
           </div>
 
@@ -406,7 +480,7 @@
       </button>
     </div>
 
-    <!-- Tourism Image Destination Cards Grid (Responsive: 1 col on mobile, 2 on tablet, 4 on desktop) -->
+    <!-- Tourism Image Destination Cards Grid -->
     <div class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
       
       <!-- Card 1: Dubai -->
@@ -423,15 +497,15 @@
             DXB
           </span>
           <div class="absolute bottom-2.5 left-2.5 text-white">
-            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-blue-300 font-bold block">United Arab Emirates</span>
-            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white">Dubai</h3>
+            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-blue-300 font-bold block" data-i18n="countryUae">United Arab Emirates</span>
+            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white" data-i18n="cityDubai">Dubai</h3>
           </div>
         </div>
         <div class="mt-2 flex items-center justify-between text-[11px] sm:text-xs text-slate-500">
           <span class="font-semibold flex items-center text-slate-700">
             <i class="fa-solid fa-plane-departure text-blue-600 mr-1 text-[10px]"></i> DAC ➔ DXB
           </span>
-          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform">Track Flights →</span>
+          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform" data-i18n="lblTrackFlights">Track Flights →</span>
         </div>
       </div>
 
@@ -449,15 +523,15 @@
             CXB
           </span>
           <div class="absolute bottom-2.5 left-2.5 text-white">
-            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-emerald-300 font-bold block">Bangladesh Tourism</span>
-            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white">Cox's Bazar</h3>
+            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-emerald-300 font-bold block" data-i18n="countryBd">Bangladesh Tourism</span>
+            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white" data-i18n="cityCox">Cox's Bazar</h3>
           </div>
         </div>
         <div class="mt-2 flex items-center justify-between text-[11px] sm:text-xs text-slate-500">
           <span class="font-semibold flex items-center text-slate-700">
             <i class="fa-solid fa-plane-departure text-blue-600 mr-1 text-[10px]"></i> DAC ➔ CXB
           </span>
-          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform">Track Flights →</span>
+          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform" data-i18n="lblTrackFlights">Track Flights →</span>
         </div>
       </div>
 
@@ -475,15 +549,15 @@
             LHR
           </span>
           <div class="absolute bottom-2.5 left-2.5 text-white">
-            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-amber-300 font-bold block">United Kingdom</span>
-            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white">London</h3>
+            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-amber-300 font-bold block" data-i18n="countryUk">United Kingdom</span>
+            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white" data-i18n="cityLondon">London</h3>
           </div>
         </div>
         <div class="mt-2 flex items-center justify-between text-[11px] sm:text-xs text-slate-500">
           <span class="font-semibold flex items-center text-slate-700">
             <i class="fa-solid fa-plane-departure text-blue-600 mr-1 text-[10px]"></i> DAC ➔ LHR
           </span>
-          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform">Track Flights →</span>
+          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform" data-i18n="lblTrackFlights">Track Flights →</span>
         </div>
       </div>
 
@@ -501,22 +575,22 @@
             SIN
           </span>
           <div class="absolute bottom-2.5 left-2.5 text-white">
-            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-cyan-300 font-bold block">Southeast Asia</span>
-            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white">Singapore</h3>
+            <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-cyan-300 font-bold block" data-i18n="countrySea">Southeast Asia</span>
+            <h3 class="font-heading font-extrabold text-base sm:text-lg text-white" data-i18n="citySingapore">Singapore</h3>
           </div>
         </div>
         <div class="mt-2 flex items-center justify-between text-[11px] sm:text-xs text-slate-500">
           <span class="font-semibold flex items-center text-slate-700">
             <i class="fa-solid fa-plane-departure text-blue-600 mr-1 text-[10px]"></i> DAC ➔ SIN
           </span>
-          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform">Track Flights →</span>
+          <span class="text-blue-600 font-bold group-hover:translate-x-1 transition-transform" data-i18n="lblTrackFlights">Track Flights →</span>
         </div>
       </div>
 
     </div>
   </section>
 
-  <!-- ================= POPULAR ROUTES QUICK CHIPS (HORIZONTAL SCROLL ON MOBILE) ================= -->
+  <!-- ================= POPULAR ROUTES QUICK CHIPS ================= -->
   <section id="popularRoutesSection" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 w-full">
     <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
       <div class="flex items-center space-x-2.5 sm:space-x-3">
@@ -549,7 +623,7 @@
     </div>
   </section>
 
-  <!-- ================= FLIGHT RESULTS LISTING SECTION (RESPONSIVE) ================= -->
+  <!-- ================= FLIGHT RESULTS LISTING SECTION ================= -->
   <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-16 flex-grow w-full space-y-4 sm:space-y-6">
     
     <!-- Results Header & Filters Bar -->
@@ -563,7 +637,7 @@
         <div>
           <div class="flex items-center space-x-2">
             <h3 class="font-heading font-bold text-slate-900 text-xs sm:text-base" data-i18n="titleFlightResults">Live Flight Schedule Results</h3>
-            <span id="cachedBadge" class="hidden text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+            <span id="cachedBadge" class="hidden text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200" data-i18n="lblCached">
               Cached
             </span>
           </div>
@@ -571,7 +645,7 @@
         </div>
       </div>
 
-      <!-- Status Filter Tabs (Go Zayaan Style Pills, Swipeable on Mobile) -->
+      <!-- Status Filter Tabs (Swipeable on Mobile) -->
       <div class="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1 sm:pb-0 font-heading">
         <button onclick="filterStatus('all')" class="status-filter active flex-shrink-0" data-i18n="filterAll">
           All Flights
@@ -589,7 +663,7 @@
 
     </div>
 
-    <!-- API Notice / Banner (if needed) -->
+    <!-- API Notice / Banner -->
     <div id="apiNoticeBanner" class="hidden p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between shadow-sm">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-circle-info text-amber-600 text-sm sm:text-base flex-shrink-0"></i>
@@ -615,7 +689,7 @@
 
     <!-- FLIGHT CARDS LISTING CONTAINER -->
     <div id="flightResultsList" class="space-y-3 sm:space-y-4">
-      <!-- Dynamic Go Zayaan Styled Flight Cards will be inserted here -->
+      <!-- Dynamic Flight Cards will be inserted here -->
     </div>
 
     <!-- EMPTY / NO RESULTS STATE -->
@@ -636,11 +710,11 @@
 
   </main>
 
-  <!-- ================= DETAILED FLIGHT MODAL (RESPONSIVE & MOBILE-FRIENDLY) ================= -->
+  <!-- ================= DETAILED FLIGHT MODAL ================= -->
   <div id="flightModal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 overflow-y-auto">
     <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[90vh] border border-slate-200 animate-in fade-in slide-in-from-bottom sm:zoom-in-95 duration-200">
       
-      <!-- Modal Header (Ticket Style) -->
+      <!-- Modal Header -->
       <div class="p-4 sm:p-6 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white flex items-center justify-between relative overflow-hidden flex-shrink-0">
         <div class="flex items-center space-x-3 sm:space-x-4 relative z-10">
           <div id="modalAirlineBadge" class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white font-mono font-extrabold text-sm sm:text-lg flex-shrink-0">
@@ -662,7 +736,7 @@
         </button>
       </div>
 
-      <!-- Modal Body (Scrollable) -->
+      <!-- Modal Body -->
       <div class="p-4 sm:p-6 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 bg-slate-50/50">
         
         <!-- LEFT: JOURNEY TIMELINE & METRICS -->
@@ -832,7 +906,7 @@
             </div>
           </div>
 
-          <!-- Leaflet Radar Map (Responsive height) -->
+          <!-- Leaflet Radar Map -->
           <div class="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-2 shadow-sm flex-grow flex flex-col min-h-[220px] sm:min-h-[280px]">
             <div class="flex items-center justify-between pb-1.5 px-2 text-xs text-slate-600 font-semibold font-heading">
               <span class="flex items-center space-x-1.5">
@@ -870,7 +944,7 @@
           </div>
           <div>
             <span class="font-heading font-extrabold text-base sm:text-lg text-slate-900">Aero<span class="text-blue-600">Radar</span></span>
-            <p class="text-[10px] sm:text-[11px] text-slate-400">Professional Aviation Search Engine & Tourism Intelligence Portal</p>
+            <p class="text-[10px] sm:text-[11px] text-slate-400" data-i18n="footerTagline">Professional Aviation Search Engine & Tourism Intelligence Portal</p>
           </div>
         </div>
 
@@ -884,8 +958,8 @@
       </div>
 
       <div class="border-t border-slate-100 pt-5 sm:pt-6 flex flex-col sm:flex-row items-center justify-between text-[10px] sm:text-[11px] text-slate-400 gap-2 text-center sm:text-left">
-        <p>© 2026 AeroRadar. All rights reserved. Powered by Aviationstack Global Flights Engine.</p>
-        <p class="font-mono">API Access: 4f20eb9555fc51e25611fb464f4068ee · Responsive & Fast</p>
+        <p data-i18n="footerCopyright">© 2026 AeroRadar. All rights reserved. Powered by Aviationstack Global Flights Engine.</p>
+        <p class="font-mono">API Access: 4f20eb9555fc51e25611fb464f4068ee · Fast & Reliable</p>
       </div>
     </div>
   </footer>

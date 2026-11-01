@@ -191,3 +191,26 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   filter: drop-shadow(0 4px 6px rgba(24, 130, 255, 0.4));
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+
+/* Sidebar Drawer & Backdrop Transitions */
+#sidebarDrawer {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebarDrawer.open {
+  transform: translateX(0) !important;
+}
+
+#sidebarBackdrop {
+  transition: opacity 0.3s ease;
+}
+
+#sidebarBackdrop.open {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.shadow-drawer {
+  box-shadow: -10px 0 35px -5px rgba(15, 23, 42, 0.3);
+}

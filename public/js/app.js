@@ -512,6 +512,7 @@ async function checkApiStatus() {
   const statusBadge = document.getElementById('apiStatusBadge');
   const statusText = document.getElementById('apiStatusText');
   
+  // Try checking local proxy first
   try {
     const res = await fetch('/api/status');
     if (res.ok) {
@@ -522,8 +523,11 @@ async function checkApiStatus() {
         return;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    // If static hosting (GitHub Pages), fallback to direct API ping
+  }
 
+  // GitHub Pages / Direct API Ping
   try {
     statusBadge.className = 'hidden sm:flex items-center space-x-1.5 text-[11px] sm:text-xs bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2.5 py-1 rounded-xl font-medium';
     statusText.textContent = (currentLang === 'bn') ? 'API রেডি' : 'API Ready';
@@ -767,7 +771,9 @@ async function fetchFlights(queryParams = {}) {
         isFromApi = true;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    // Ignore and fallback to direct API
+  }
 
   // 2. Direct client-side fetch to Aviationstack API (For GitHub Pages)
   if (!isFromApi) {
@@ -786,6 +792,8 @@ async function fetchFlights(queryParams = {}) {
         if (data.data && Array.isArray(data.data) && data.data.length > 0) {
           flights = data.data;
           isFromApi = true;
+        } else if (data.error) {
+          console.warn('Aviationstack API response notice:', data.error);
         }
       }
     } catch (apiErr) {
@@ -994,9 +1002,9 @@ function createZayaanFlightCard(flight, index) {
       <div class="flex items-center space-x-2 sm:space-x-3 overflow-hidden text-[10px] sm:text-[11px]">
         <span class="flex items-center space-x-1 font-mono text-slate-600 truncate">
           <i class="fa-solid fa-plane-up text-slate-400"></i>
-          <span>${aircraft.registration ? `Tail: ${aircraft.registration}` : (aircraft.icao24 ? `ICAO: ${aircraft.icao24}` : 'Commercial')}</span>
+          <span>${aircraft.registration ? `${tailLabel}: ${aircraft.registration}` : (aircraft.icao24 ? `ICAO: ${aircraft.icao24}` : 'Commercial')}</span>
         </span>
-        ${flightInfo.codeshared ? `<span class="hidden sm:inline text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium truncate">Codeshare: ${flightInfo.codeshared.airline_name || ''}</span>` : ''}
+        ${flightInfo.codeshared ? `<span class="hidden sm:inline text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium truncate">${codeshareLabel} ${flightInfo.codeshared.airline_name || ''}</span>` : ''}
       </div>
 
       <button onclick="openFlightModal(${JSON.stringify(flight).replace(/"/g, '&quot;')})" class="w-full xs:w-auto px-4 py-2 sm:py-2.5 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white rounded-xl font-bold transition-all flex items-center justify-center space-x-2 group cursor-pointer shadow-sm font-heading text-xs sm:text-sm">
@@ -1053,6 +1061,35 @@ function formatTime(isoString) {
   }
 }
 
+// Sidebar Drawer Functions
+function openSidebar() {
+  const drawer = document.getElementById('sidebarDrawer');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (drawer && backdrop) {
+    drawer.classList.add('open');
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeSidebar() {
+  const drawer = document.getElementById('sidebarDrawer');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (drawer && backdrop) {
+    drawer.classList.remove('open');
+    backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+// Global Keyboard listener (Escape closes sidebar and modal)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeSidebar();
+    closeFlightModal();
+  }
+});
+
 // Open Detailed Flight Modal
 function openFlightModal(flight) {
   const modal = document.getElementById('flightModal');
@@ -1093,7 +1130,12 @@ function openFlightModal(flight) {
   document.getElementById('modalDepScheduled').textContent = formatTime(dep.scheduled);
   document.getElementById('modalDepEstimated').textContent = formatTime(dep.estimated);
   document.getElementById('modalDepActual').textContent = formatTime(dep.actual);
-  document.getElementById('modalDepGate').textContent = `T${dep.terminal || '1'} / Gate ${dep.gate || 'TBA'}`;
+  const isBn = currentLang === 'bn';
+  const termLabel = isBn ? 'টার্মিনাল' : 'T';
+  const gateLabel = isBn ? 'গেট' : 'Gate';
+  const beltLabel = isBn ? 'বেল্ট' : 'Belt';
+  const tbaText = isBn ? 'অপেক্ষমান' : 'TBA';
+  document.getElementById('modalDepGate').textContent = `${termLabel} ${dep.terminal || '1'} / ${gateLabel} ${dep.gate || tbaText}`;
   document.getElementById('modalDepDelay').textContent = dep.delay 
     ? (currentLang === 'bn' ? `${dep.delay} মিনিট` : `${dep.delay} mins`)
     : (currentLang === 'bn' ? '০ মিনিট' : '0 mins');
@@ -1103,8 +1145,8 @@ function openFlightModal(flight) {
   document.getElementById('modalArrScheduled').textContent = formatTime(arr.scheduled);
   document.getElementById('modalArrEstimated').textContent = formatTime(arr.estimated);
   document.getElementById('modalArrActual').textContent = formatTime(arr.actual);
-  document.getElementById('modalArrGate').textContent = `T${arr.terminal || '1'} / Gate ${arr.gate || 'TBA'}`;
-  document.getElementById('modalArrBaggage').textContent = arr.baggage ? `Belt ${arr.baggage}` : (currentLang === 'bn' ? 'ঘোষিত হয়নি' : 'TBA');
+  document.getElementById('modalArrGate').textContent = `${termLabel} ${arr.terminal || '1'} / ${gateLabel} ${arr.gate || tbaText}`;
+  document.getElementById('modalArrBaggage').textContent = arr.baggage ? `${beltLabel} ${arr.baggage}` : (currentLang === 'bn' ? 'ঘোষিত হয়নি' : 'TBA');
   document.getElementById('modalArrTz').textContent = arr.timezone || '--';
 
   // Aircraft Specs
