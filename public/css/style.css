@@ -214,3 +214,20 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .shadow-drawer {
   box-shadow: -10px 0 35px -5px rgba(15, 23, 42, 0.3);
 }
+
+
+/* Hero Dark Gradient Overlay for Maximum Text Readability */
+.hero-dark-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(3, 22, 17, 0.84) 0%, rgba(2, 13, 21, 0.92) 100%);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 35%, rgba(2, 8, 14, 0.70) 100%);
+  pointer-events: none;
+}
