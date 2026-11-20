@@ -1449,7 +1449,7 @@ function renderLeafletMap(flight) {
 
   if (depCoords && arrCoords) {
     const routeLine = L.polyline([depCoords, arrCoords], {
-      color: '#1882FF',
+      color: '#00bb88',
       weight: 3,
       opacity: 0.85,
       dashArray: '6, 6'

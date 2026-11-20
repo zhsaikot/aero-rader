@@ -18,16 +18,41 @@
         extend: {
           colors: {
             brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#1882FF',
-              600: '#0064D2',
-              700: '#0052B4',
-              900: '#0B1B3D',
-              dark: '#08142c',
-              accent: '#FF7A00',
-              border: '#E2E8F0',
-              bg: '#F8FAFC'
+              50: '#edfbf7',
+              100: '#cbf4e7',
+              200: '#9ae7d1',
+              300: '#63d6b6',
+              400: '#2ec49e',
+              500: '#00bb88',
+              600: '#00a376',
+              700: '#00835f',
+              800: '#00684c',
+              900: '#00553f',
+              dark: '#03261d',
+              accent: '#ff8800',
+              border: '#9ae7d1',
+              bg: '#f7fdfb'
+            },
+            blue: {
+              50: '#edfbf7',
+              100: '#cbf4e7',
+              200: '#9ae7d1',
+              300: '#63d6b6',
+              400: '#00bb88',
+              500: '#00bb88',
+              600: '#00bb88',
+              700: '#00a376',
+              800: '#00835f',
+              900: '#00553f',
+              950: '#03261d'
+            },
+            indigo: {
+              400: '#2ec49e',
+              500: '#00bb88',
+              600: '#00a376',
+              700: '#00835f',
+              800: '#00684c',
+              900: '#00553f'
             }
           },
           fontFamily: {
@@ -46,7 +71,8 @@
           boxShadow: {
             'card': '0 4px 20px -2px rgba(11, 27, 61, 0.06), 0 2px 6px -1px rgba(11, 27, 61, 0.04)',
             'floating': '0 20px 40px -15px rgba(11, 27, 61, 0.12)',
-            'hover': '0 12px 30px -5px rgba(0, 100, 210, 0.12)',
+            'hover': '0 12px 30px -5px rgba(0, 187, 136, 0.18)',
+            'floating': '0 20px 40px -15px rgba(0, 187, 136, 0.16)',
             'drawer': '-10px 0 35px -5px rgba(11, 27, 61, 0.2)'
           }
         }
@@ -61,7 +87,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
   <!-- Custom Styling -->
-  <link rel="stylesheet" href="./css/style.css?v=2.7">
+  <link rel="stylesheet" href="./css/style.css?v=3.0">
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white relative">
 
@@ -224,7 +250,7 @@
         class="w-full h-full object-cover object-center filter brightness-90 transform scale-105"
       >
       <!-- Premium Glassmorphic Gradient Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-blue-950/75 to-slate-900/80 backdrop-blur-[1px]"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950/88 via-[#012f23]/80 to-slate-900/85 backdrop-blur-[1px]"></div>
       <div class="absolute inset-0 bg-[radial-gradient(#ffffff12_1px,transparent_1px)] [background-size:22px_22px]"></div>
     </div>
 
@@ -1020,6 +1046,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <!-- Main Application Script -->
-  <script src="./js/app.js?v=2.7"></script>
+  <script src="./js/app.js?v=3.0"></script>
 </body>
 </html>
