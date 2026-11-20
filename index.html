@@ -87,7 +87,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
   <!-- Custom Styling -->
-  <link rel="stylesheet" href="./css/style.css?v=3.1">
+  <link rel="stylesheet" href="./css/style.css?v=3.2">
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-blue-600 selection:text-white relative">
 
@@ -240,7 +240,7 @@
   </aside>
 
   <!-- ================= HERO SECTION WITH HIGH-IMPACT AVIATION IMAGE ================= -->
-  <section class="relative text-white pt-8 sm:pt-12 pb-24 sm:pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[320px] sm:min-h-[380px] flex items-center justify-center">
+  <section class="relative text-white pt-14 sm:pt-20 lg:pt-24 pb-28 sm:pb-36 lg:pb-44 px-4 sm:px-6 lg:px-8 overflow-hidden flex flex-col items-center justify-start">
     
     <!-- Hero Background Image (Layered Dark Readability Overlay) -->
     <div class="absolute inset-0 z-0 overflow-hidden">
@@ -256,7 +256,7 @@
     </div>
 
     <!-- Hero Text Content -->
-    <div class="max-w-5xl mx-auto text-center space-y-3.5 sm:space-y-4 relative z-10 -mt-6 sm:-mt-8">
+    <div class="max-w-4xl mx-auto text-center space-y-4 sm:space-y-5 relative z-10">
       
       <div class="inline-flex items-center space-x-2 bg-slate-950/65 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-emerald-300 border border-emerald-500/30 shadow-lg">
         <i class="fa-solid fa-shield-halved text-amber-400"></i>
@@ -267,7 +267,7 @@
         Track Any Flight Worldwide in <span class="text-[#00bb88] drop-shadow-[0_2px_12px_rgba(0,187,136,0.45)]">Real-Time</span>
       </h1>
       
-      <p class="text-xs sm:text-sm md:text-base text-slate-100 max-w-2xl mx-auto font-medium px-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]" data-i18n="heroSubtitle">
+      <p class="text-xs sm:text-sm md:text-base text-slate-100 max-w-2xl mx-auto font-medium px-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] leading-relaxed" data-i18n="heroSubtitle">
         Search live flights by flight code, airport routes, or commercial airlines. Access scheduled timings, terminal gates, baggage claim carousels, and live GPS radar tracking.
       </p>
 
@@ -275,8 +275,8 @@
   </section>
 
   <!-- ================= FLOATING SEARCH ENGINE CARD (SIGNATURE GO ZAYAAN STYLE) ================= -->
-  <section id="searchSection" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 -mt-20 sm:-mt-28 relative z-30 w-full">
-    <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 sm:pb-4 shadow-floating border border-slate-200/90 transition-all">
+  <section id="searchSection" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 -mt-20 sm:-mt-24 lg:-mt-28 relative z-30 w-full">
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-7 shadow-floating border border-slate-200/90 transition-all">
       
       <!-- Search Mode Tabs (Swipeable on Mobile) -->
       <div class="flex items-center space-x-2 border-b border-slate-200 pb-3 mb-4 sm:mb-6 overflow-x-auto no-scrollbar text-xs sm:text-sm font-heading flex-nowrap">
@@ -543,7 +543,7 @@
   </section>
 
   <!-- ================= FLIGHT RESULTS LISTING SECTION ================= -->
-  <main id="flightResultsMain" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-4 flex-grow w-full space-y-3 sm:space-y-3.5">
+  <main id="flightResultsMain" class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-8 flex-grow w-full space-y-4 sm:space-y-5">
     
     <!-- Results Header & Filters Bar -->
     <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
@@ -1047,6 +1047,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <!-- Main Application Script -->
-  <script src="./js/app.js?v=3.1"></script>
+  <script src="./js/app.js?v=3.2"></script>
 </body>
 </html>
